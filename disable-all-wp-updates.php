@@ -125,6 +125,9 @@ class Disable_All_WP_Updates {
 		add_filter( 'bulk_actions-themes', array( $this, 'remove_bulk_actions' ) );
 		add_filter( 'bulk_actions-plugins-network', array( $this, 'remove_bulk_actions' ) );
 		add_filter( 'bulk_actions-themes-network', array( $this, 'remove_bulk_actions' ) );
+
+		// Filter outbound requests to known update hosts.
+		add_filter( 'pre_http_request', array( $this, 'filter_update_requests' ), 10, 3 );
 	}
 
 	/**
@@ -296,6 +299,85 @@ class Disable_All_WP_Updates {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Blocks update requests made to known update hosts.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool $bool  The return value if we should filter the request.
+	 * @param array $args An array of args passed to the remote request.
+	 * @param string $url The URL requested.
+	 * @return bool
+	 */
+	public function filter_update_requests( $bool, $args, $url ) {
+		if ( empty( $url ) ) {
+			return $bool;
+		}
+
+		$pieces = wp_parse_url( $url );
+		if ( ! $pieces ) {
+			return $bool;
+		}
+
+		// Add a filterable list of hosts/paths to be checked for possible blocking.
+		$datasets = array(
+			array(
+				'host' => 'api.wordpress.org',
+				'path' => 'update-check'
+			),
+			array(
+				'host' => 'api.wordpress.org',
+				'path' => 'version-check'
+			),
+			array(
+				'host' => 'enviragallery.com'
+			),
+			array(
+				'host' => 'soliloquywp.com'
+			),
+			array(
+				'host' => 'wpforms.com'
+			),
+			array(
+				'host' => 'easydigitaldownloads.com'
+			),
+			array(
+				'host' => 'gravityhelp.com'
+			),
+			array(
+				'host' => 'gravityplugins.com'
+			)
+		);
+		$datasets = apply_filters( 'dawpu_filter_update_requests', $datasets );
+		if ( ! $datasets ) {
+			return $bool;
+		}
+
+		// Loop through the datasets to determine if we can return true
+		// and prevent the request from happening.
+		foreach ( $datasets as $array => $data ) {
+			// Check for both host and path combined first.
+			if ( ! empty( $data['host'] ) && ! empty( $data['path'] ) ) {
+				if ( ! empty( $pieces['host'] ) && ! empty( $pieces['path'] ) ) {
+					if ( false !== stripos( $pieces['host'], $data['host'] ) && false !== stripos( $pieces['path'], $data['path'] ) ) {
+						return true;
+					}
+				}
+			} else if ( ! empty( $data['host'] ) && ! empty( $pieces['host'] ) ) {
+				if ( false !== stripos( $pieces['host'], $data['host'] ) ) {
+					return true;
+				}
+			} else if ( ! empty( $data['path'] ) && ! empty( $pieces['path'] ) ) {
+				if ( false !== stripos( $pieces['path'], $data['path'] ) ) {
+					return true;
+				}
+			}
+		}
+
+		// Finally, return the default value.
+		return $bool;
 	}
 
 }
