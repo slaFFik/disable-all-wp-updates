@@ -230,8 +230,8 @@ class Disable_All_WP_Updates {
 	/**
 	 * Remove auto-update test from site health check.
 	 *
-	 * This prevents auto-updates not been updated from the list of
-	 * failures as it is intentional.
+	 * This removes auto-update related failures from the site health check page as
+	 * it's not a bug but a feature.
 	 *
 	 * @param array $tests {
 	 *     An associative array, where the `$test_type` is either `direct` or
