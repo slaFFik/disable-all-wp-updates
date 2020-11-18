@@ -203,9 +203,19 @@ class Disable_All_WP_Updates {
 	function block_update_caps( $caps, $cap ) {
 		$update_caps = array(
 			'update_plugins',
+			'delete_plugins',
+			'install_plugins',
+			'upload_plugins',
+
 			'update_themes',
-			'update_core',
+			'delete_themes',
+			'install_themes',
+			'upload_themes',
+
 			'update_languages',
+			'update_languages',
+
+			'update_core',
 			'update_php',
 		);
 
