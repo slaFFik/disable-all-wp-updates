@@ -87,6 +87,7 @@ class Disable_All_WP_Updates {
 		// Remove hooks and cron checks.
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
+		remove_action( 'init', 'wp_schedule_update_checks' );
 
 		// Disable plugins from hooking into plugins_api.
 		remove_all_filters( 'plugins_api' );
