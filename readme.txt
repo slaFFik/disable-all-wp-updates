@@ -2,7 +2,7 @@
 Contributors: griffinjt
 Tags: update, updates, disable updates, disable update, disable automatic update, disable core update, disable core updates, disable plugin update, disable plugin updates, disable theme update, disable theme updates, disable upgrades, upgrade, upgrades, disable, prevent wordpress update, prevent update, stop updates, stop upgrades, automatic update, automatic updates, automatic upgrade, automatic upgrades
 Requires at least: 4.0
-Tested up to: 4.4.2
+Tested up to: 4.5.2
 Stable tag: trunk
 License: GNU General Public License v2.0 or later
 
@@ -21,6 +21,9 @@ This plugin was created by <a href="http://thomasgriffin.io" rel="me" title="Wor
 2. Activate Disable All WP Updates. No configuration necessary. Plugin may cause admin to be slow on activation as it cleans out any current update requests. Once this is complete, your admin area will run noticeably faster.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fix: removed blocking outbound connections to known hosts for things like verifying license keys.
 
 = 1.0.0 =
 * Initial release.
