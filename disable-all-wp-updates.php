@@ -214,7 +214,7 @@ class Disable_All_WP_Updates {
 			'upload_themes',
 
 			'update_languages',
-			'update_languages',
+			'install_languages',
 
 			'update_core',
 			'update_php',
