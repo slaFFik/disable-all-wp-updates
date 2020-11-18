@@ -30,6 +30,8 @@
 
 	<!-- Style sniffs -->
 	<rule ref="WordPress-Core">
+		<!-- Exclude a few rules. -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
 	</rule>
 	<rule ref="WordPress.CodeAnalysis.EmptyStatement"/>
 
