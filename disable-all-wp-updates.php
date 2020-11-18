@@ -125,6 +125,9 @@ class Disable_All_WP_Updates {
 		add_filter( 'bulk_actions-themes', array( $this, 'remove_bulk_actions' ) );
 		add_filter( 'bulk_actions-plugins-network', array( $this, 'remove_bulk_actions' ) );
 		add_filter( 'bulk_actions-themes-network', array( $this, 'remove_bulk_actions' ) );
+
+		// Prevent user actions.
+		add_filter( 'map_meta_cap', array( $this, 'block_update_caps' ), 10, 2 );
 	}
 
 	/**
@@ -180,6 +183,34 @@ class Disable_All_WP_Updates {
 		remove_action( 'network_admin_notices', 'update_nag', 3 );
 		remove_action( 'admin_notices', 'maintenance_nag' );
 		remove_action( 'network_admin_notices', 'maintenance_nag' );
+	}
+
+	/**
+	 * Block users from taking certain actions.
+	 *
+	 * Adds `do_not_allow` magic keyword to block users from taking update
+	 * related actions.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string[] $caps Required primitive caps for the capability been checked.
+	 * @param string   $cap  The capability been checked.
+	 * @return string[] Modified array of primitive caps.
+	 */
+	function block_update_caps( $caps, $cap ) {
+		$update_caps = array(
+			'update_plugins',
+			'update_themes',
+			'update_core',
+			'update_languages',
+			'update_php',
+		);
+
+		if ( in_array( $cap, $update_caps, true ) ) {
+			$caps[] = 'do_not_allow';
+		}
+
+		return $caps;
 	}
 
 	/**
