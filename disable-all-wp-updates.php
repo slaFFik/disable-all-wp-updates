@@ -128,6 +128,9 @@ class Disable_All_WP_Updates {
 
 		// Prevent user actions.
 		add_filter( 'map_meta_cap', array( $this, 'block_update_caps' ), 10, 2 );
+
+		// Prevent site health check returning errors for feature.
+		add_filter( 'site_status_tests', array( $this, 'remove_auto_update_health_check' ) );
 	}
 
 	/**
@@ -211,6 +214,38 @@ class Disable_All_WP_Updates {
 		}
 
 		return $caps;
+	}
+
+	/**
+	 * Remove auto-update test from site health check.
+	 *
+	 * This prevents auto-updates not been updated from the list of
+	 * failures as it is intentional.
+	 *
+	 * @param array $tests {
+	 *     An associative array, where the `$test_type` is either `direct` or
+	 *     `async`, to declare if the test should run via Ajax calls after page load.
+	 *
+	 *     @type array $identifier {
+	 *         `$identifier` should be a unique identifier for the test that should run.
+	 *         Plugins and themes are encouraged to prefix test identifiers with their slug
+	 *         to avoid any collisions between tests.
+	 *
+	 *         @type string   $label             A friendly label for your test to identify it by.
+	 *         @type mixed    $test              A callable to perform a direct test, or a string AJAX action
+	 *                                           to be called to perform an async test.
+	 *         @type boolean  $has_rest          Optional. Denote if `$test` has a REST API endpoint.
+	 *         @type boolean  $skip_cron         Whether to skip this test when running as cron.
+	 *         @type callable $async_direct_test A manner of directly calling the test marked as asynchronous,
+	 *                                           as the scheduled event can not authenticate, and endpoints
+	 *                                           may require authentication.
+	 *     }
+	 * }
+	 * @return array Modified array of tests.
+	 */
+	function remove_auto_update_health_check( $tests ) {
+		unset( $tests['async']['background_updates'], $tests['direct']['plugin_theme_auto_updates'] );
+		return $tests;
 	}
 
 	/**
