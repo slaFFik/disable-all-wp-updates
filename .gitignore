@@ -51,3 +51,4 @@ release.sh
 # Directories #
 ####################
 disable-all-wp-updates-svn
+/vendor/
