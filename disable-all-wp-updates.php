@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Disable All WP Updates
- * Plugin URI:	https://thomasgriffin.io
+ * Plugin URI:  https://thomasgriffin.io
  * Description: Disables all WordPress updates and update checks.
- * Author:		Thomas Griffin
- * Author URI:	https://thomasgriffin.io
- * Version:		1.0.1
+ * Author:      Thomas Griffin
+ * Author URI:  https://thomasgriffin.io
+ * Version:     1.0.1
  *
  * Disable All WP Updates is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  *
  * @package Disable_All_WP_Updates
- * @author	Thomas Griffin
+ * @author  Thomas Griffin
  */
 class Disable_All_WP_Updates {
 
@@ -189,7 +189,8 @@ class Disable_All_WP_Updates {
 	 */
 	public function pre_update_themes() {
 		// Get all registered themes.
-		if ( false === ($this->themes = get_transient( 'dawpu_themes' )) ) {
+		$this->themes = get_transient( 'dawpu_themes' );
+		if ( false === $this->themes ) {
 			foreach ( wp_get_themes() as $theme ) {
 				$this->themes[ $theme->get_stylesheet() ] = $theme->get( 'Version' );
 			}
@@ -199,10 +200,10 @@ class Disable_All_WP_Updates {
 
 		// Return an empty object to prevent extra checks.
 		return (object) array(
-			'last_checked'	  => time(),
-			'updates'		  => array(),
+			'last_checked'    => time(),
+			'updates'         => array(),
 			'version_checked' => $this->wp_version,
-			'checked'		  => $this->themes
+			'checked'         => $this->themes,
 		);
 	}
 
@@ -222,7 +223,8 @@ class Disable_All_WP_Updates {
 	 */
 	public function pre_update_plugins() {
 		// Get all registered plugins.
-		if ( false === ($this->plugins = get_transient( 'dawpu_plugins' )) ) {
+		$this->plugins = get_transient( 'dawpu_plugins' );
+		if ( false === $this->plugins ) {
 			if ( ! function_exists( 'get_plugins' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
@@ -236,10 +238,10 @@ class Disable_All_WP_Updates {
 
 		// Return an empty object to prevent extra checks.
 		return (object) array(
-			'last_checked'	  => time(),
-			'updates'		  => array(),
+			'last_checked'    => time(),
+			'updates'         => array(),
 			'version_checked' => $this->wp_version,
-			'checked'		  => $this->plugins
+			'checked'         => $this->plugins,
 		);
 	}
 
@@ -260,8 +262,8 @@ class Disable_All_WP_Updates {
 	public function pre_update_core() {
 		// Return an empty object to prevent extra checks.
 		return (object) array(
-			'last_checked'	  => time(),
-			'updates'		  => array(),
+			'last_checked'    => time(),
+			'updates'         => array(),
 			'version_checked' => $this->wp_version,
 		);
 	}
