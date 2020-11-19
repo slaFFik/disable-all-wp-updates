@@ -5,7 +5,7 @@
  * Description: Disables all WordPress updates and update checks.
  * Author:      Thomas Griffin
  * Author URI:  https://thomasgriffin.io
- * Version:     1.0.1
+ * Version:     1.1.0
  *
  * Disable All WP Updates is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,6 +87,7 @@ class Disable_All_WP_Updates {
 		// Remove hooks and cron checks.
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
+		remove_action( 'init', 'wp_schedule_update_checks' );
 
 		// Disable plugins from hooking into plugins_api.
 		remove_all_filters( 'plugins_api' );
@@ -125,6 +126,12 @@ class Disable_All_WP_Updates {
 		add_filter( 'bulk_actions-themes', array( $this, 'remove_bulk_actions' ) );
 		add_filter( 'bulk_actions-plugins-network', array( $this, 'remove_bulk_actions' ) );
 		add_filter( 'bulk_actions-themes-network', array( $this, 'remove_bulk_actions' ) );
+
+		// Prevent user actions.
+		add_filter( 'map_meta_cap', array( $this, 'block_update_caps' ), 10, 2 );
+
+		// Prevent site health check returning errors for feature.
+		add_filter( 'site_status_tests', array( $this, 'remove_auto_update_health_check' ) );
 	}
 
 	/**
@@ -180,6 +187,76 @@ class Disable_All_WP_Updates {
 		remove_action( 'network_admin_notices', 'update_nag', 3 );
 		remove_action( 'admin_notices', 'maintenance_nag' );
 		remove_action( 'network_admin_notices', 'maintenance_nag' );
+	}
+
+	/**
+	 * Block users from taking certain actions.
+	 *
+	 * Adds `do_not_allow` magic keyword to block users from taking update
+	 * related actions.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string[] $caps Required primitive caps for the capability been checked.
+	 * @param string   $cap  The capability been checked.
+	 * @return string[] Modified array of primitive caps.
+	 */
+	function block_update_caps( $caps, $cap ) {
+		$update_caps = array(
+			'update_plugins',
+			'delete_plugins',
+			'install_plugins',
+			'upload_plugins',
+
+			'update_themes',
+			'delete_themes',
+			'install_themes',
+			'upload_themes',
+
+			'update_languages',
+			'install_languages',
+
+			'update_core',
+			'update_php',
+		);
+
+		if ( in_array( $cap, $update_caps, true ) ) {
+			$caps[] = 'do_not_allow';
+		}
+
+		return $caps;
+	}
+
+	/**
+	 * Remove auto-update test from site health check.
+	 *
+	 * This removes auto-update related failures from the site health check page as
+	 * it's not a bug but a feature.
+	 *
+	 * @param array $tests {
+	 *     An associative array, where the `$test_type` is either `direct` or
+	 *     `async`, to declare if the test should run via Ajax calls after page load.
+	 *
+	 *     @type array $identifier {
+	 *         `$identifier` should be a unique identifier for the test that should run.
+	 *         Plugins and themes are encouraged to prefix test identifiers with their slug
+	 *         to avoid any collisions between tests.
+	 *
+	 *         @type string   $label             A friendly label for your test to identify it by.
+	 *         @type mixed    $test              A callable to perform a direct test, or a string AJAX action
+	 *                                           to be called to perform an async test.
+	 *         @type boolean  $has_rest          Optional. Denote if `$test` has a REST API endpoint.
+	 *         @type boolean  $skip_cron         Whether to skip this test when running as cron.
+	 *         @type callable $async_direct_test A manner of directly calling the test marked as asynchronous,
+	 *                                           as the scheduled event can not authenticate, and endpoints
+	 *                                           may require authentication.
+	 *     }
+	 * }
+	 * @return array Modified array of tests.
+	 */
+	function remove_auto_update_health_check( $tests ) {
+		unset( $tests['async']['background_updates'], $tests['direct']['plugin_theme_auto_updates'] );
+		return $tests;
 	}
 
 	/**
