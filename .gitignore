@@ -44,11 +44,7 @@ Thumbs.db
 #####################
 .env
 
-# Deployment Files #
-####################
-release.sh
-
 # Directories #
 ####################
-disable-all-wp-updates-svn
+/.tmp-svn
 /vendor/
