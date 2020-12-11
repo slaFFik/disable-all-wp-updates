@@ -43,12 +43,7 @@ echo "readme.txt version: $NEWVERSION1"
 NEWVERSION2=`grep "^[ \t\*]*Version[ \t]*:[ \t]*" $MAINFILE | awk -F' ' '{print $NF}'`
 echo "$MAINFILE version: $NEWVERSION2"
 
-NEWVERSION3=`grep "^define([ \t]*\'WP_CALL_BUTTON_VERSION\'[ \t]*,[ \t]*\'[0-9\.]*\'[ \t]*);" $MAINFILE | awk -F' ' '{print $3}'`
-NEWVERSION3=`echo $NEWVERSION3 | sed "s/\'//g"`
-echo "defined version: $NEWVERSION3"
-
 if [ "$NEWVERSION1" != "$NEWVERSION2" ]; then echo "Version in readme.txt & $MAINFILE don't match. Exiting...."; exit 1; fi
-if [ "$NEWVERSION3" != "$NEWVERSION2" ]; then echo "Version in define() & $MAINFILE don't match. Exiting...."; exit 1; fi
 
 mkdir -p "$TMPPATH/svn-checkout";
 
