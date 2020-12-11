@@ -2,7 +2,7 @@
 Contributors: griffinjt
 Tags: update, updates, disable updates, disable update, disable automatic update, disable core update, disable core updates, disable plugin update, disable plugin updates, disable theme update, disable theme updates, disable upgrades, upgrade, upgrades, disable, prevent wordpress update, prevent update, stop updates, stop upgrades, automatic update, automatic updates, automatic upgrade, automatic upgrades
 Requires at least: 4.0
-Tested up to: 5.5
+Tested up to: 5.6
 Stable tag: 1.1.0
 License: GNU General Public License v2.0 or later
 
