@@ -1,11 +1,14 @@
 <?php
 /**
- * Plugin Name: Disable All WP Updates
- * Plugin URI:  https://thomasgriffin.io
- * Description: Disables all WordPress updates and update checks.
- * Author:      Thomas Griffin
- * Author URI:  https://thomasgriffin.io
- * Version:     1.1.0
+ * Plugin Name:       Disable All WP Updates
+ * Plugin URI:        https://thomasgriffin.io
+ * Description:       Disables all WordPress updates and update checks.
+ * Author:            Thomas Griffin
+ * Author URI:        https://thomasgriffin.io
+ * Version:           1.1.0
+ * Requires at least: 4.0
+ * Tested up to:      5.7
+ * License:           GNU General Public License v2.0 or later
  *
  * Disable All WP Updates is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
