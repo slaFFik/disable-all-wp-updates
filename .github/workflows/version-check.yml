@@ -1,10 +1,6 @@
 name: Version check
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
+on: [workflow_dispatch]
 
 jobs:
   # Confirms all version numbers match.
