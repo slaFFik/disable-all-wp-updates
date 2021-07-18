@@ -13,7 +13,7 @@ SKIP_COMPOSER=true
 HEADERS=("Requires at least" "Tested up to" "License")
 
 # git config
-GITPATH="$CURRENTDIR/" # this file should be in the base of your git repository
+GITPATH="$CURRENTDIR" # this file should be in the base of your git repository
 
 # svn config
 TMPPATH="$GITPATH/.tmp-svn" # path to a temp SVN repo. No trailing slash required and don't add trunk.
@@ -42,7 +42,6 @@ fi
 # Only exit once all checks are complete.
 EXIT_WITH_ONE=0
 for HEADER in "${HEADERS[@]}"; do
-	echo 'h';
 	RM_VALUE=`grep "^[ 	\*]*${HEADER}[ 	\*]*:" ${README_FILE} | awk -F' ' '{print $NF}'`
 	PHP_VALUE=`grep "^[ 	\*]*${HEADER}[ 	\*]*:" ${MAIN_PHP_FILE} | awk -F' ' '{print $NF}'`
 	echo "Header: ${HEADER}"
@@ -57,19 +56,22 @@ if [ $EXIT_WITH_ONE == 1 ]; then
 	exit 1
 fi
 
+
 # Check version in readme.txt is the same as plugin file after translating both to unix line breaks to work around grep's failure to identify mac line breaks
-NEWVERSION1=`grep "^Stable tag:" $GITPATH/readme.txt | awk -F' ' '{print $NF}'`
-echo "readme.txt version: $NEWVERSION1"
-NEWVERSION2=`grep "^[ \t\*]*Version[ \t]*:[ \t]*" $MAIN_PHP_FILE | awk -F' ' '{print $NF}'`
-echo "$MAIN_PHP_FILE version: $NEWVERSION2"
-
-if [ "$NEWVERSION1" != "$NEWVERSION2" ]; then echo "Version in readme.txt & $MAIN_PHP_FILE don't match. Exiting...."; exit 1; fi
-
-mkdir -p "$TMPPATH/svn-checkout";
+RM_VALUE=`grep "^[ 	\*]*Stable tag[ 	\*]*:" ${README_FILE} | awk -F' ' '{print $NF}'`
+PHP_VALUE=`grep "^[ 	\*]*Version[ 	\*]*:" ${MAIN_PHP_FILE} | awk -F' ' '{print $NF}'`
+echo "Version number check"
+echo "readme stable tag: ${RM_VALUE}"
+echo "php file version: ${PHP_VALUE}"
+echo
+if [ "$RM_VALUE" != "$PHP_VALUE" ]; then
+	exit 1
+fi
 
 echo
-echo "Removing existing tmp directory"
+echo "Remove and recreate temp directory"
 rm -rf $TMPPATH
+mkdir -p "$TMPPATH/svn-checkout";
 
 echo
 echo "Creating local copy of SVN repo ..."
@@ -111,6 +113,12 @@ if [[ -f package.json ]]; then
 		npm run build
 		npm ci --production
 		rm -rf node_modules/.*
+	elif [ $NPM_BUILD_DIR ]; then
+		cd $GITPATH;
+		npm run build;
+		mkdir -p "$TMPPATH/svn-checkout/trunk/$NPM_BUILD_DIR"
+		cp -r "$GITPATH/$NPM_BUILD_DIR/" "$TMPPATH/svn-checkout/trunk/$NPM_BUILD_DIR/"
+		cd "$TMPPATH/svn-checkout/trunk"
 	fi
 	rm package{.json,-lock.json}
 fi
@@ -127,10 +135,6 @@ echo "Removing webpack and remaining config files from root directory."
 rm webpack.config.js postcss.config.js
 
 echo
-echo "Removing asset src files from package."
-rm -rf assets/block/src
-
-echo
 echo "Initial SVN status"
 svn status
 
@@ -140,7 +144,16 @@ echo "Preparing commit ..."
 svn status | grep -v "^.[ \t]*\..*" | grep "^?" | awk '{print $2}' | xargs svn add
 svn status | grep -v "^.[ \t]*\..*" | grep "^\!" | awk '{print $2}' | xargs svn rm
 
+if [[ -d "$TMPPATH/svn-checkout/tags/$RM_VALUE" ]]; then
+	echo "Tag exists, updating readme only..."
+	cp "$TMPPATH/svn-checkout/trunk/$README_FILE" "$TMPPATH/svn-checkout/tags/$RM_VALUE/$README_FILE"
+else
+	echo "Creating new tag..."
+	cd "$TMPPATH/svn-checkout"
+	svn copy trunk/ tags/$RM_VALUE
+fi
+
 echo
 echo "Now ready to commit trunk ..."
+cd "$TMPPATH/svn-checkout/"
 svn status
-
