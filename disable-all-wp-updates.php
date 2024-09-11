@@ -7,7 +7,7 @@
  * Author URI:        https://thomasgriffin.io
  * Version:           1.1.0
  * Requires at least: 4.0
- * Tested up to:      5.8
+ * Tested up to:      6.6
  * License:           GNU General Public License v2.0 or later
  *
  * Disable All WP Updates is free software: you can redistribute it and/or modify
