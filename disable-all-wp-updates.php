@@ -46,7 +46,7 @@ class Disable_All_WP_Updates {
 	 *
 	 * @var bool|int
 	 */
-	public $version = false;
+	public $wp_version = false;
 
 	/**
 	 * Holds all the registered themes.
