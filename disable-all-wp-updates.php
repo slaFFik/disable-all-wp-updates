@@ -309,6 +309,8 @@ class Disable_All_WP_Updates {
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 
+			$this->plugins = array();
+
 			foreach ( get_plugins() as $file => $plugin ) {
 				$this->plugins[ $file ] = $plugin['Version'];
 			}
