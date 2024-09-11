@@ -204,7 +204,7 @@ class Disable_All_WP_Updates {
 	 * @param string   $cap  The capability been checked.
 	 * @return string[] Modified array of primitive caps.
 	 */
-	function block_update_caps( $caps, $cap ) {
+	public function block_update_caps( $caps, $cap ) {
 		$update_caps = array(
 			'update_plugins',
 			'delete_plugins',
@@ -257,7 +257,7 @@ class Disable_All_WP_Updates {
 	 * }
 	 * @return array Modified array of tests.
 	 */
-	function remove_auto_update_health_check( $tests ) {
+	public function remove_auto_update_health_check( $tests ) {
 		unset( $tests['async']['background_updates'], $tests['direct']['plugin_theme_auto_updates'] );
 		return $tests;
 	}
@@ -379,7 +379,6 @@ class Disable_All_WP_Updates {
 
 		return $actions;
 	}
-
 }
 
 // Initialize the plugin.
