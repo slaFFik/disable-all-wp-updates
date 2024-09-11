@@ -4,6 +4,9 @@
     "type": "wordpress-plugin",
     "license": "GNU General Public License v2.0 or later",
     "minimum-stability": "stable",
+    "scripts": {
+        "phpcs": " ./vendor/bin/phpcs -q -n . "
+    },
     "require": {},
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
